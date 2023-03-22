@@ -4,7 +4,7 @@ from Compute_Jacobian import jacobian
 import timeit
 
 class PINN:
-    def __init__(self, layers, X_u, Y_u, X_r, Y_r):
+    def __init__(self, layers, X_u, Y_u, X_r, Y_r, activation_function=tf.nn.tanh):
         self.mu_X, self.sigma_X = X_r.mean(0), X_r.std(0)
         self.mu_x, self.sigma_x = self.mu_X[0], self.sigma_X[0]
 
@@ -13,6 +13,9 @@ class PINN:
         self.Y_u = Y_u
         self.X_r = (X_r - self.mu_X) / self.sigma_X
         self.Y_r = Y_r
+
+        # Safe activation_function
+        self.activation_func = activation_function
 
         # Initialize network weights and biases
         self.layers = layers
@@ -131,7 +134,7 @@ class PINN:
         for l in range(0, num_layers - 2):
             W = self.weights[l]
             b = self.biases[l]
-            H = tf.nn.tanh(tf.add(tf.matmul(H, W), b))
+            H = self.activation_func(tf.add(tf.matmul(H, W), b))
         W = self.weights[-1]
         b = self.biases[-1]
         H = tf.add(tf.matmul(H, W), b)
