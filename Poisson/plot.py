@@ -53,7 +53,6 @@ def plot_eigenvalues(lambda_K_log, lambda_K_uu_log, lambda_K_rr_log):
     plt.yscale('log')
     plt.title(r'Eigenvalues of ${K}_{rr}$')
     plt.tight_layout()
-    plt.savefig("test_3.png")
 
 def plot_ntk_changes(K_list):
     NTK_change_list = []
@@ -69,5 +68,37 @@ def plot_weights_change(weights_change_list):
     fig = plt.figure(figsize=(6,5))
     plt.title("Change of NN Params")
     plt.plot(weights_change_list)
-    plt.savefig("test_2.png")
 
+def sub_plot_combined_eigenvalues(lambda_log):
+    minimum = np.min(lambda_log, axis=0)
+    mean   = np.mean(lambda_log, axis=0)
+    maximum = np.max(lambda_log, axis=0)
+    plt.plot(mean)
+    # plt.fill_between(minimum, maximum, alpha=0.5)
+    plt.xscale('log')
+    plt.yscale('log')
+    plt.title(r'Eigenvalues of ${K}$')
+
+def plot_combined_eigenvalues(lambda_K_log, lambda_K_uu_log, lambda_K_rr_log):
+    plt.subplot(1,3,1)
+
+    sub_plot_combined_eigenvalues(lambda_K_log)
+    plt.title(r'Eigenvalues of ${K}$')
+    plt.tight_layout()
+
+    plt.subplot(1,3,2)
+    sub_plot_combined_eigenvalues(lambda_K_uu_log)
+    plt.title(r'Eigenvalues of ${K}_{uu}$')
+    plt.tight_layout()
+
+    plt.subplot(1,3,3)
+    sub_plot_combined_eigenvalues(lambda_K_rr_log)
+    plt.title(r'Eigenvalues of ${K}_{rr}$')
+    plt.tight_layout()
+
+def plot_all_combined_eigenvalues(eigen_dict):
+    fig = plt.figure(figsize=(18, 5))
+
+    plt.legend(eigen_dict.keys())
+    for name, lambda_values in eigen_dict.items():
+        plot_combined_eigenvalues(*lambda_values)

@@ -1,6 +1,6 @@
 import tensorflow as tf
 import numpy as np
-from Poisson.Compute_Jacobian import jacobian 
+from Compute_Jacobian import jacobian 
 import timeit
 
 class PINN:
