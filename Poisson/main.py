@@ -130,10 +130,10 @@ def plot_model(name, model, fig_folder="data"):
     plt.close("all")
     return lambda_K_log, lambda_K_uu_log, lambda_K_rr_log
 
-
-for name, activation_function in zip(["tanh"    , "sigmoid"    , "softmax"    , "ReLU"    , "ReLU6"    ], \
-                                     [tf.nn.tanh, tf.nn.sigmoid, tf.nn.softmax, tf.nn.relu, tf.nn.relu6]):
-    os.makedirs(name, exist_ok=True)
+start_n = 1
+stop_n = 5
+for name, n_hidden_layers in zip([f"{n}_hidden_layers" for n in range(start_n,stop_n + 1)], \
+                                     list(range(start_n,stop_n + 1))):
     print("current used activation function:", name)
     # Define computional domain
     bc1_coords = np.array([[0.0],
@@ -162,9 +162,10 @@ for name, activation_function in zip(["tanh"    , "sigmoid"    , "softmax"    , 
 
 
     # Define model
-    layers = [1, 512, 1]  
+    layers = [1, *([512]*n_hidden_layers), 1]  
+    print(layers)
     # layers = [1, 512, 512, 512, 1]  
-    model = PINN(layers, X_u, Y_u, X_r, Y_r, activation_function=activation_function)    
+    model = PINN(layers, X_u, Y_u, X_r, Y_r)    
 
 
 

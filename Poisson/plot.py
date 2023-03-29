@@ -26,7 +26,6 @@ def plot_resulting_func(X_star, u_star, u_pred):
     plt.xlabel('$x$')
     plt.ylabel('Point-wise error')
     plt.tight_layout()
-    plt.savefig("test.png")
 
 def plot_eigenvalues(lambda_K_log, lambda_K_uu_log, lambda_K_rr_log):
     fig = plt.figure(figsize=(18, 5))
