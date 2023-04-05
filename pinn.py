@@ -4,7 +4,7 @@ from Compute_Jacobian import jacobian
 import timeit
 
 class PINN:
-    def __init__(self, layers, X_u, Y_u, X_r, Y_r):
+    def __init__(self, layers, X_u, Y_u, X_r, Y_r, train_algo=None,):
         self.mu_X, self.sigma_X = X_r.mean(0), X_r.std(0)
         self.mu_x, self.sigma_x = self.mu_X[0], self.sigma_X[0]
 
@@ -56,16 +56,25 @@ class PINN:
         # Total loss
         self.loss = self.loss_res + self.loss_bcs
 
+        # Loss function using L2 Regularization
+        self.regularizer = tf.nn.l2_loss(self.weights[-1])
+        self.loss = tf.reduce_mean(self.loss + 3. * self.regularizer)
+
         # Define optimizer with learning rate schedule
-        self.global_step = tf.Variable(0, trainable=False)
-        starter_learning_rate = 1e-5
-        self.learning_rate = tf.train.exponential_decay(starter_learning_rate, self.global_step,
-                                                        1000, 0.9, staircase=False)
+        # self.global_step = tf.Variable(0, trainable=False)
+        # starter_learning_rate = 1e-5
+        # self.learning_rate = starter_learning_rate
+        # self.learning_rate = tf.train.exponential_decay(starter_learning_rate, self.global_step,
+        #                                                 1000, 0.9, staircase=False)
         # Passing global_step to minimize() will increment it at each step.
         # To compute NTK, it is better to use SGD optimizer
         # since the corresponding gradient flow is not exactly same.
-        self.train_op = tf.train.GradientDescentOptimizer(starter_learning_rate).minimize(self.loss)
-        # self.train_op = tf.train.AdamOptimizer(self.learning_rate).minimize(self.loss, global_step=self.global_step)
+        # self.train_op = tf.train.GradientDescentOptimizer(self.learning_rate).minimize(self.loss)
+        # self.train_op = tf.train.AdadeltaOptimizer(starter_learning_rate).minimize(self.loss)
+        # self.train_op = tf.train.MomentumOptimizer(starter_learning_rate, momentum=1e-3).minimize(self.loss)
+        # self.train_op = tf.train.AdagradOptimizer(self.learning_rate).minimize(self.loss)
+        # self.train_op = tf.train.AdamOptimizer(starter_learning_rate).minimize(self.loss, global_step=self.global_step)
+        self.train_op = train_algo.minimize(self.loss)
 
 
         # Initialize Tensorflow variables
