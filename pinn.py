@@ -4,7 +4,7 @@ from Compute_Jacobian import jacobian
 import timeit
 
 class PINN:
-    def __init__(self, layers, X_u, Y_u, X_r, Y_r, train_algo=None,):
+    def __init__(self, layers, X_u, Y_u, X_r, Y_r, train_algo=None, regularization=None,):
         self.mu_X, self.sigma_X = X_r.mean(0), X_r.std(0)
         self.mu_x, self.sigma_x = self.mu_X[0], self.sigma_X[0]
 
@@ -56,9 +56,10 @@ class PINN:
         # Total loss
         self.loss = self.loss_res + self.loss_bcs
 
-        # Loss function using L2 Regularization
-        self.regularizer = tf.nn.l2_loss(self.weights[-1])
-        self.loss = tf.reduce_mean(self.loss + 3. * self.regularizer)
+        if regularization:
+            # Loss function using L2 Regularization
+            self.regularizer = tf.nn.l2_loss(self.weights[-1])
+            self.loss = tf.reduce_mean(self.loss + 3. * self.regularizer)
 
         # Define optimizer with learning rate schedule
         # self.global_step = tf.Variable(0, trainable=False)

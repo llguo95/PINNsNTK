@@ -9,48 +9,17 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import os
 
-
 from pinn import PINN
 from util import compute_ntk_eigenvalues
 
 
-# Define solution and its Laplace
-a = 4
-
 def u(x, a):
-  return np.sin(np.pi * a * x)
+    return np.sin(np.pi * a * x)
+
 
 def u_xx(x, a):
-  return -(np.pi * a)**2 * np.sin(np.pi * a * x)
+    return -(np.pi * a)**2 * np.sin(np.pi * a * x)
 
-
-# Define computional domain
-bc1_coords = np.array([[0.0],
-                       [0.0]])
-
-bc2_coords = np.array([[1.0],
-                       [1.0]])
-
-dom_coords = np.array([[0.0],
-                       [1.0]])
-
-# Training data on u(x) -- Dirichlet boundary conditions
-
-nn  = 100
-
-X_bc1 = dom_coords[0, 0] * np.ones((nn // 2, 1))
-X_bc2 = dom_coords[1, 0] * np.ones((nn // 2, 1))
-X_u = np.vstack([X_bc1, X_bc2])
-Y_u = u(X_u, a)
-
-X_r = np.linspace(dom_coords[0, 0],
-                  dom_coords[1, 0], nn)[:, None]
-Y_r = u_xx(X_r, a)
-
-
-# Define model
-layers = [1, 512, 1]  
-# layers = [1, 512, 512, 512, 1]  
 
 def main(
         train_algo=None, 
@@ -58,13 +27,49 @@ def main(
         SMOKE_TEST=False, 
         iteration=None,
         noisy_data=None,
+        regularization=None,
         ):
-    model = PINN(layers, X_u, Y_u, X_r, Y_r, train_algo=train_algo)    
+    # Define solution and its Laplace
+    a = 4
+
+    # Define computional domain
+    bc1_coords = np.array([[0.0],
+                        [0.0]])
+
+    bc2_coords = np.array([[1.0],
+                        [1.0]])
+
+    dom_coords = np.array([[0.0],
+                        [1.0]])
+
+    # Training data on u(x) -- Dirichlet boundary conditions
+
+    nn  = 100
+
+    X_bc1 = dom_coords[0, 0] * np.ones((nn // 2, 1))
+    X_bc2 = dom_coords[1, 0] * np.ones((nn // 2, 1))
+    X_u = np.vstack([X_bc1, X_bc2])
+    Y_u = u(X_u, a)
+
+    X_r = np.linspace(dom_coords[0, 0],
+                    dom_coords[1, 0], nn)[:, None]
+    Y_r = u_xx(X_r, a)
+
+
+    # Define model
+    layers = [1, 512, 1]  
+    # layers = [1, 512, 512, 512, 1]  
+
+    
+    if noisy_data:
+        Y_r += np.random.randn(*Y_r.shape)
+
+    model = PINN(layers, X_u, Y_u, X_r, Y_r, train_algo=train_algo, regularization=regularization)    
 
 
     # Train model
     if SMOKE_TEST:
-        nIter = 401
+        nIter = 4001
     else:
         nIter = 40001
 
