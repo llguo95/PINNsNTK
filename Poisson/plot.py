@@ -98,6 +98,6 @@ def plot_combined_eigenvalues(lambda_K_log, lambda_K_uu_log, lambda_K_rr_log):
 def plot_all_combined_eigenvalues(eigen_dict):
     fig = plt.figure(figsize=(18, 5))
 
-    plt.legend(eigen_dict.keys())
     for name, lambda_values in eigen_dict.items():
         plot_combined_eigenvalues(*lambda_values)
+    plt.legend(eigen_dict.keys())
