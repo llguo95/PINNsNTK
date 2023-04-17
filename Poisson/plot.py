@@ -1,5 +1,11 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import pickle
+
+def savefig(name):
+    with open(f"{name}.pk","wb") as file:
+        pickle.dump(plt.gcf(), file)
+    plt.savefig(f"{name}.png")
 
 def plot_loss(loss_bcs, loss_res):
     fig = plt.figure(figsize=(6,5))
@@ -26,7 +32,6 @@ def plot_resulting_func(X_star, u_star, u_pred):
     plt.xlabel('$x$')
     plt.ylabel('Point-wise error')
     plt.tight_layout()
-    plt.savefig("test.png")
 
 def plot_eigenvalues(lambda_K_log, lambda_K_uu_log, lambda_K_rr_log):
     fig = plt.figure(figsize=(18, 5))
@@ -99,6 +104,6 @@ def plot_combined_eigenvalues(lambda_K_log, lambda_K_uu_log, lambda_K_rr_log):
 def plot_all_combined_eigenvalues(eigen_dict):
     fig = plt.figure(figsize=(18, 5))
 
-    plt.legend(eigen_dict.keys())
     for name, lambda_values in eigen_dict.items():
         plot_combined_eigenvalues(*lambda_values)
+    plt.legend(eigen_dict.keys())
