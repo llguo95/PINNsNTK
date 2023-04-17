@@ -40,6 +40,7 @@ def plot_all(model_dict, fig_folder="data"):
     plot_all_combined_eigenvalues(eigen_dict)
     plt.savefig(f"{fig_folder}/5.png")
     plt.show()
+    return eigen_dict
 
 def plot_model(name, model, fig_folder="data"):
     os.makedirs(f"{fig_folder}/{name}", exist_ok=True)
@@ -132,8 +133,15 @@ def plot_model(name, model, fig_folder="data"):
 
 start_n = 1
 stop_n = 5
-for name, n_hidden_layers in zip([f"{n}_hidden_layers" for n in range(start_n,stop_n + 1)], \
-                                     list(range(start_n,stop_n + 1))):
+# for name, n_hidden_layers in zip([f"{n}_hidden_layers" for n in range(start_n,stop_n + 1)], \
+#                                      list(range(start_n,stop_n + 1))):
+activation_func = tf.nn.tanh
+batch_sizes = [56,128,256,512]
+for name, n_hidden_layers, batch_size in zip( 
+    [f"3_layer_{i}_batch" for i in batch_sizes],
+    [3]*4, 
+    batch_sizes
+):
     print("current used activation function:", name)
     # Define computional domain
     bc1_coords = np.array([[0.0],
@@ -165,13 +173,12 @@ for name, n_hidden_layers in zip([f"{n}_hidden_layers" for n in range(start_n,st
     layers = [1, *([512]*n_hidden_layers), 1]  
     print(layers)
     # layers = [1, 512, 512, 512, 1]  
-    model = PINN(layers, X_u, Y_u, X_r, Y_r)    
+    model = PINN(layers, X_u, Y_u, X_r, Y_r, activation_function=activation_func)    
 
 
 
     # Train model
-    model.train(nIter=40001, batch_size=100, log_NTK=True, log_weights=True)
-    model.activation_func = tf.nn.tanh
+    model.train(nIter=40001, batch_size=batch_size, log_NTK=True, log_weights=True)
     model_dict[name] = model
     plot_model(name, model)
 
