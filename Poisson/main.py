@@ -38,7 +38,7 @@ def plot_all(model_dict, fig_folder="data"):
         print(name)
         eigen_dict[name] = plot_model(name, model, fig_folder=fig_folder)
     plot_all_combined_eigenvalues(eigen_dict)
-    plt.savefig(f"{fig_folder}/5.png")
+    savefig(f"{fig_folder}/5")
     plt.show()
     return eigen_dict
 
@@ -46,7 +46,7 @@ def plot_model(name, model, fig_folder="data"):
     os.makedirs(f"{fig_folder}/{name}", exist_ok=True)
     plot_loss(model.loss_bcs_log, model.loss_res_log)
     # plt.title(name)
-    plt.savefig(f"{fig_folder}/{name}/0.png")
+    savefig(f"{fig_folder}/{name}/0")
 
 
     nn = 1000
@@ -67,7 +67,7 @@ def plot_model(name, model, fig_folder="data"):
 
     plot_resulting_func(X_star, u_star, u_pred)
     # plt.title(name)
-    plt.savefig(f"{fig_folder}/{name}/1.png")
+    savefig(f"{fig_folder}/{name}/1")
 
 
     lambda_K_log, lambda_K_uu_log, lambda_K_rr_log, K_list = compute_ntk_eigenvalues(model)
@@ -75,13 +75,13 @@ def plot_model(name, model, fig_folder="data"):
 
     plot_eigenvalues(lambda_K_log, lambda_K_uu_log, lambda_K_rr_log)
     # plt.title(name)
-    plt.savefig(f"{fig_folder}/{name}/2.png")
+    savefig(f"{fig_folder}/{name}/2")
 
 
 
     plot_ntk_changes(K_list)
     # plt.title(name)
-    plt.savefig(f"{fig_folder}/{name}/3.png")
+    savefig(f"{fig_folder}/{name}/3")
 
 
 
@@ -127,7 +127,7 @@ def plot_model(name, model, fig_folder="data"):
 
     plot_weights_change(weights_change_list)
     # plt.title(name)
-    plt.savefig(f"{fig_folder}/{name}/4.png")
+    savefig(f"{fig_folder}/{name}/4")
     plt.close("all")
     return lambda_K_log, lambda_K_uu_log, lambda_K_rr_log
 
