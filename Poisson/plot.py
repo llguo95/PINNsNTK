@@ -1,5 +1,11 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import pickle
+
+def savefig(name):
+    with open(f"{name}.pk","wb") as file:
+        pickle.dump(plt.gcf(), file)
+    plt.savefig(f"{name}.png")
 
 def plot_loss(loss_bcs, loss_res):
     fig = plt.figure(figsize=(6,5))
