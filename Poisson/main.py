@@ -136,10 +136,10 @@ stop_n = 5
 # for name, n_hidden_layers in zip([f"{n}_hidden_layers" for n in range(start_n,stop_n + 1)], \
 #                                      list(range(start_n,stop_n + 1))):
 activation_func = tf.nn.tanh
-batch_sizes = [56,128,256,512]
+batch_sizes = [128] * 3
 for name, n_hidden_layers, batch_size in zip( 
     [f"3_layer_{i}_batch" for i in batch_sizes],
-    [3]*4, 
+    [5]*3, 
     batch_sizes
 ):
     print("current used activation function:", name)
