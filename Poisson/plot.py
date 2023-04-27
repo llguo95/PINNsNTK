@@ -82,6 +82,8 @@ def sub_plot_combined_eigenvalues(lambda_log):
     # plt.fill_between(minimum, maximum, alpha=0.5)
     plt.xscale('log')
     plt.yscale('log')
+    plt.ylabel('Magnitude')
+    plt.xlabel('Eigenvalue no.')
     plt.title(r'Eigenvalues of ${K}$')
 
 def plot_combined_eigenvalues(lambda_K_log, lambda_K_uu_log, lambda_K_rr_log):
@@ -107,3 +109,25 @@ def plot_all_combined_eigenvalues(eigen_dict):
     for name, lambda_values in eigen_dict.items():
         plot_combined_eigenvalues(*lambda_values)
     plt.legend(eigen_dict.keys())
+
+
+def plot_all_results(model_dict, X_star, u_star):
+    fig = plt.figure(figsize=(12, 5))
+    
+    plt.plot(X_star, u_star, label='Exact')
+    for name,model in model_dict.items():
+        u_pred = model.predict_u(X_star)
+        plt.subplot(1,2,1)
+        plt.plot(X_star, u_pred, '--', label=f'{name}')
+        plt.xlabel('$x$')
+        plt.ylabel('$y$')
+
+        plt.subplot(1,2,2)
+        plt.plot(X_star, np.abs(u_star - u_pred), label=f'{name}')
+        plt.yscale('log')
+        plt.xlabel('$x$')
+        plt.ylabel('Point-wise error')
+        plt.tight_layout()
+    plt.subplot(1,2,1)
+    plt.plot(X_star, u_star, label='Exact')
+    plt.legend(loc='upper right')

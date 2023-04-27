@@ -39,6 +39,11 @@ def plot_all(model_dict, fig_folder="data"):
         eigen_dict[name] = plot_model(name, model, fig_folder=fig_folder)
     plot_all_combined_eigenvalues(eigen_dict)
     savefig(f"{fig_folder}/5")
+    nn = 1000
+    X_star = np.linspace(dom_coords[0, 0], dom_coords[1, 0], nn)[:, None]
+    u_star = u(X_star, a)
+    plot_all_results(model_dict, X_star, u_star)
+    savefig(f"{fig_folder}/resulting_fig")
     plt.show()
 
 def plot_model(name, model, fig_folder="data"):
@@ -58,7 +63,7 @@ def plot_model(name, model, fig_folder="data"):
     r_pred = model.predict_r(X_star)
     error_u = np.linalg.norm(u_star - u_pred, 2) / np.linalg.norm(u_star, 2)
     error_r = np.linalg.norm(r_star - r_pred, 2) / np.linalg.norm(r_star, 2)
-
+    plot_all_results(model_dict, X_star, u_star)
     print('Relative L2 error_u: {:.2e}'.format(error_u))
     print('Relative L2 error_r: {:.2e}'.format(error_r))
 
