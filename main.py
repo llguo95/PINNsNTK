@@ -28,6 +28,9 @@ def main(
         iteration=None,
         noisy_data=None,
         regularization=None,
+        df=None,
+        df_errors=None,
+        seed=None,
         ):
     # Define solution and its Laplace
     a = 4
@@ -62,6 +65,7 @@ def main(
 
     
     if noisy_data:
+        np.random.seed(seed)
         Y_r += np.random.randn(*Y_r.shape)
 
     model = PINN(layers, X_u, Y_u, X_r, Y_r, train_algo=train_algo, regularization=regularization)    
@@ -69,7 +73,7 @@ def main(
 
     # Train model
     if SMOKE_TEST:
-        nIter = 4001
+        nIter = 401
     else:
         nIter = 40001
 
@@ -110,6 +114,10 @@ def main(
     print('Relative L2 error_u: {:.2e}'.format(error_u))
     print('Relative L2 error_r: {:.2e}'.format(error_r))
 
+    if df_errors is not None:
+        # df_errors[train_algo._name] = [error_u, error_r]
+        df_errors[regularization] = [error_u, error_r]
+
     if "prediction" in visualize:
         fig = plt.figure(num="prediction", figsize=(12, 5))
         plt.subplot(1,2,1)
@@ -141,6 +149,8 @@ def main(
         plt.xscale('log')
         plt.yscale('log')
         plt.title(r'Eigenvalues of ${K}$')
+        plt.xlabel('Eigenvalue no.')
+        plt.ylabel('Magnitude')
         plt.tight_layout()
 
         plt.subplot(1,3,2)
@@ -149,6 +159,8 @@ def main(
         plt.xscale('log')
         plt.yscale('log')
         plt.title(r'Eigenvalues of ${K}_{uu}$')
+        plt.xlabel('Eigenvalue no.')
+        plt.ylabel('Magnitude')
         plt.tight_layout()
 
         plt.subplot(1,3,3)
@@ -157,6 +169,8 @@ def main(
         plt.xscale('log')
         plt.yscale('log')
         plt.title(r'Eigenvalues of ${K}_{rr}$')
+        plt.xlabel('Eigenvalue no.')
+        plt.ylabel('Magnitude')
         plt.tight_layout()
 
     
@@ -167,12 +181,17 @@ def main(
     NTK_change_list = []
     K0 = K_list[0]
     for K in K_list:
-        diff = np.linalg.norm(K - K0) / np.linalg.norm(K0) 
+        diff = np.linalg.norm(K - K0) / np.linalg.norm(K0) * 100
         NTK_change_list.append(diff)
+
+    if df is not None:
+        df[noisy_data] = NTK_change_list
 
     if "convergence" in visualize:
         fig = plt.figure(num='convergence', figsize=(6,5))
         plt.plot(NTK_change_list)
+        plt.xlabel('Iteration no. (x100)')
+        plt.ylabel('Relative change in magnitude (%)')
 
     
     # 
@@ -221,6 +240,8 @@ def main(
     if "convergence_weights" in visualize:
         fig = plt.figure(figsize=(6,5))
         plt.plot(weights_change_list)
+
+    return df
 
 if __name__ == '__main__':
     main()
